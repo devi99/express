@@ -20,7 +20,7 @@ exports.index = function(req, res) {
 // Display list of all questions.
 exports.question_list = function(req, res, next) {
 
-  Question.find({}, 'question ')
+  Question.find()
     .exec(function (err, list_questions) {
       if (err) { return next(err); }
       // Successful, so render
@@ -36,15 +36,9 @@ exports.question_detail = function(req, res, next) {
         question: function(callback) {
 
             Question.findById(req.params.id)
-              .populate('author')
-              .populate('genre')
               .exec(callback);
         },
-        question_instance: function(callback) {
 
-          QuestionInstance.find({ 'question': req.params.id })
-          .exec(callback);
-        },
     }, function(err, results) {
         if (err) { return next(err); }
         if (results.question==null) { // No results.
@@ -53,14 +47,14 @@ exports.question_detail = function(req, res, next) {
             return next(err);
         }
         // Successful, so render.
-        res.render('question_detail', { title: 'Title', question:  results.question, question_instances: results.question_instance } );
+        res.render('question_detail', { title: 'Title', question:  results.question } );
     });
 
 };
 
 // Display question create form on GET.
 exports.question_create_get = function(req, res, next) {
-
+    console.log("question_create_get");
     res.render('question_form', { title: 'Create Question' });
 
     // Get all authors and genres, which we can use for adding to our question.
@@ -79,26 +73,14 @@ exports.question_create_get = function(req, res, next) {
 
 // Handle question create on POST.
 exports.question_create_post = [
-    // Convert the genre to an array.
-    (req, res, next) => {
-        if(!(req.body.genre instanceof Array)){
-            if(typeof req.body.genre==='undefined')
-            req.body.genre=[];
-            else
-            req.body.genre=new Array(req.body.genre);
-        }
-        next();
-    },
-
+    
     // Validate fields.
-    body('title', 'Title must not be empty.').isLength({ min: 1 }).trim(),
-    body('author', 'Author must not be empty.').isLength({ min: 1 }).trim(),
-    body('summary', 'Summary must not be empty.').isLength({ min: 1 }).trim(),
-    body('isbn', 'ISBN must not be empty').isLength({ min: 1 }).trim(),
+    body('question', 'question must not be empty.').isLength({ min: 1 }).trim(),
+    body('correctAnswer', 'correctAnswer must not be empty.').isLength({ min: 1 }).trim(),
+
   
     // Sanitize fields.
     sanitizeBody('*').trim().escape(),
-    sanitizeBody('genre.*').trim().escape(),
     // Process request after validation and sanitization.
     (req, res, next) => {
         
@@ -108,11 +90,13 @@ exports.question_create_post = [
 
         // Create a Question object with escaped and trimmed data.
         var question = new Question(
-          { title: req.body.title,
-            author: req.body.author,
-            summary: req.body.summary,
-            isbn: req.body.isbn,
-            genre: req.body.genre
+          { question: req.body.question,
+            correctAnswer: req.body.correctAnswer,
+            fakeAnswer1: req.body.fakeAnswer1,
+            fakeAnswer2: req.body.fakeAnswer2,
+            fakeAnswer3: req.body.fakeAnswer3,
+            fakeAnswer4: req.body.fakeAnswer4,
+            fakeAnswer5: req.body.fakeAnswer5
            });
 
         if (!errors.isEmpty()) {
@@ -120,22 +104,11 @@ exports.question_create_post = [
 
             // Get all authors and genres for form.
             async.parallel({
-                authors: function(callback) {
-                    Author.find(callback);
-                },
-                genres: function(callback) {
-                    Genre.find(callback);
-                },
+
             }, function(err, results) {
                 if (err) { return next(err); }
-
-                // Mark our selected genres as checked.
-                for (let i = 0; i < results.genres.length; i++) {
-                    if (question.genre.indexOf(results.genres[i]._id) > -1) {
-                        results.genres[i].checked='true';
-                    }
-                }
-                res.render('question_form', { title: 'Create Question',authors:results.authors, genres:results.genres, question: question, errors: errors.array() });
+                console.log("question render"),
+                res.render('question_form', { title: 'Create Question',question: question, errors: errors.array() });
             });
             return;
         }
@@ -157,18 +130,15 @@ exports.question_delete_get = function(req, res, next) {
 
     async.parallel({
         question: function(callback) {
-            Question.findById(req.params.id).populate('author').populate('genre').exec(callback);
-        },
-        question_questioninstances: function(callback) {
-            QuestionInstance.find({ 'question': req.params.id }).exec(callback);
+            Question.findById(req.params.id).exec(callback);
         },
     }, function(err, results) {
         if (err) { return next(err); }
         if (results.question==null) { // No results.
-            res.redirect('/catalog/questions');
+            res.redirect('/game/questions');
         }
         // Successful, so render.
-        res.render('question_delete', { title: 'Delete Question', question: results.question, question_instances: results.question_questioninstances } );
+        res.render('question_delete', { title: 'Delete Question', question: results.question } );
     });
 
 };
@@ -180,28 +150,17 @@ exports.question_delete_post = function(req, res, next) {
 
     async.parallel({
         question: function(callback) {
-            Question.findById(req.params.id).populate('author').populate('genre').exec(callback);
-        },
-        question_questioninstances: function(callback) {
-            QuestionInstance.find({ 'question': req.params.id }).exec(callback);
+            Question.findById(req.params.id).exec(callback);
         },
     }, function(err, results) {
         if (err) { return next(err); }
         // Success
-        if (results.question_questioninstances.length > 0) {
-            // Question has question_instances. Render in same way as for GET route.
-            res.render('question_delete', { title: 'Delete Question', question: results.question, question_instances: results.question_questioninstances } );
-            return;
-        }
-        else {
-            // Question has no QuestionInstance objects. Delete object and redirect to the list of questions.
-            Question.findByIdAndRemove(req.body.id, function deleteQuestion(err) {
-                if (err) { return next(err); }
-                // Success - got to questions list.
-                res.redirect('/catalog/questions');
-            });
-
-        }
+            // Delete object and redirect to the list of questions.
+        Question.findByIdAndRemove(req.body.id, function deleteQuestion(err) {
+            if (err) { return next(err); }
+            // Success - got to questions list.
+            res.redirect('/game/questions');
+        });
     });
 
 };
@@ -212,13 +171,7 @@ exports.question_update_get = function(req, res, next) {
     // Get question, authors and genres for form.
     async.parallel({
         question: function(callback) {
-            Question.findById(req.params.id).populate('author').populate('genre').exec(callback);
-        },
-        authors: function(callback) {
-            Author.find(callback);
-        },
-        genres: function(callback) {
-            Genre.find(callback);
+            Question.findById(req.params.id).exec(callback);
         },
         }, function(err, results) {
             if (err) { return next(err); }
@@ -228,15 +181,7 @@ exports.question_update_get = function(req, res, next) {
                 return next(err);
             }
             // Success.
-            // Mark our selected genres as checked.
-            for (var all_g_iter = 0; all_g_iter < results.genres.length; all_g_iter++) {
-                for (var question_g_iter = 0; question_g_iter < results.question.genre.length; question_g_iter++) {
-                    if (results.genres[all_g_iter]._id.toString()==results.question.genre[question_g_iter]._id.toString()) {
-                        results.genres[all_g_iter].checked='true';
-                    }
-                }
-            }
-            res.render('question_form', { title: 'Update Question', authors:results.authors, genres:results.genres, question: results.question });
+            res.render('question_form', { title: 'Update Question', question: results.question });
         });
 
 };
@@ -245,29 +190,24 @@ exports.question_update_get = function(req, res, next) {
 // Handle question update on POST.
 exports.question_update_post = [
 
-    // Convert the genre to an array.
+    // Convert the question to an array.
     (req, res, next) => {
-        if(!(req.body.genre instanceof Array)){
-            if(typeof req.body.genre==='undefined')
-            req.body.genre=[];
+        if(!(req.body.question instanceof Array)){
+            if(typeof req.body.question==='undefined')
+            req.body.question=[];
             else
-            req.body.genre=new Array(req.body.genre);
+            req.body.question=new Array(req.body.question);
         }
         next();
     },
    
     // Validate fields.
-    body('title', 'Title must not be empty.').isLength({ min: 1 }).trim(),
-    body('author', 'Author must not be empty.').isLength({ min: 1 }).trim(),
-    body('summary', 'Summary must not be empty.').isLength({ min: 1 }).trim(),
-    body('isbn', 'ISBN must not be empty').isLength({ min: 1 }).trim(),
+    body('question', 'question must not be empty.').isLength({ min: 1 }).trim(),
+    body('correctAnswer', 'correctAnswer must not be empty.').isLength({ min: 1 }).trim(),
 
+  
     // Sanitize fields.
-    sanitizeBody('title').trim().escape(),
-    sanitizeBody('author').trim().escape(),
-    sanitizeBody('summary').trim().escape(),
-    sanitizeBody('isbn').trim().escape(),
-    sanitizeBody('genre.*').trim().escape(),
+    sanitizeBody('*').trim().escape(),
 
     // Process request after validation and sanitization.
     (req, res, next) => {
@@ -276,36 +216,27 @@ exports.question_update_post = [
         const errors = validationResult(req);
 
         // Create a Question object with escaped/trimmed data and old id.
-        var question = new Question(
-          { title: req.body.title,
-            author: req.body.author,
-            summary: req.body.summary,
-            isbn: req.body.isbn,
-            genre: (typeof req.body.genre==='undefined') ? [] : req.body.genre,
-            _id:req.params.id // This is required, or a new ID will be assigned!
-           });
+           var question = new Question(
+            { question: req.body.question,
+              correctAnswer: req.body.correctAnswer,
+              fakeAnswer1: req.body.fakeAnswer1,
+              fakeAnswer2: req.body.fakeAnswer2,
+              fakeAnswer3: req.body.fakeAnswer3,
+              fakeAnswer4: req.body.fakeAnswer4,
+              fakeAnswer5: req.body.fakeAnswer5,
+              _id:req.params.id
+             });           
 
         if (!errors.isEmpty()) {
             // There are errors. Render form again with sanitized values/error messages.
 
             // Get all authors and genres for form
             async.parallel({
-                authors: function(callback) {
-                    Author.find(callback);
-                },
-                genres: function(callback) {
-                    Genre.find(callback);
-                },
+
             }, function(err, results) {
                 if (err) { return next(err); }
 
-                // Mark our selected genres as checked.
-                for (let i = 0; i < results.genres.length; i++) {
-                    if (question.genre.indexOf(results.genres[i]._id) > -1) {
-                        results.genres[i].checked='true';
-                    }
-                }
-                res.render('question_form', { title: 'Update Question',authors:results.authors, genres:results.genres, question: question, errors: errors.array() });
+                res.render('question_form', { title: 'Update Question', question: question, errors: errors.array() });
             });
             return;
         }

@@ -4,8 +4,8 @@ block content
   h1= title
   
   ul
-  each question in question_list
+  each squestion in question_list
     li 
-      #{question.question} 
+       a(href=squestion.url) #{squestion.question} 
   else
     li There are no questions.
