@@ -3,11 +3,10 @@ var router = express.Router();
 
 // Require our controllers.
 var question_controller = require('../controllers/questionController'); 
+var game_controller = require('../controllers/gameController'); 
 
-// GET game listing.
-router.get('/', function(req, res, next) {
-  res.send('respond with a resource');
-});
+// GET game home page.
+router.get('/', game_controller.game_index);  
 
 /// QUESTION ROUTES ///
 
