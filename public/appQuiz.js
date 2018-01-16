@@ -39,8 +39,9 @@ jQuery(function($){
          */
         onConnected : function() {
             // Cache a copy of the client's socket.IO session ID on the App
-            App.mySocketId = IO.socket.socket.sessionid;
-            // console.log(data.message);
+            //App.mySocketId = IO.socket.socket.sessionid;
+            App.mySocketId = IO.socket.id;
+            //console.log(data.message);
         },
 
         //function for showing leader
@@ -224,7 +225,7 @@ jQuery(function($){
 
         onBackClick : function() {
           App.$gameArea.html(App.$templateIntroScreen);
-          App.doTextFit('.title');
+          //App.doTextFit('.title');
         },
         /* *******************************
            *         HOST CODE           *
@@ -284,7 +285,7 @@ jQuery(function($){
 
                 // Display the URL on screen
                 $('#gameURL').text(window.location.href);
-                App.doTextFit('#gameURL');
+                //App.doTextFit('#gameURL');
 
                 // Show the gameId / room id on screen
                 $('#spanNewGameCode').text(App.gameId);
@@ -355,7 +356,7 @@ jQuery(function($){
             newWord : function(data) {
                 // Insert the new word into the DOM
                 $('#hostWord').text(data.word);
-                App.doTextFit('#hostWord');
+                //App.doTextFit('#hostWord');
                 //Insert the Image
                 if(data.typeMedia == 'pic') {
                     //$('body').css('backgroundImage','url('+data.urlMedia+')');
@@ -437,7 +438,7 @@ jQuery(function($){
                 } else {
                     $('#hostWord').text( winner + ' Wins!!' );
                 }
-                App.doTextFit('#hostWord');
+                //App.doTextFit('#hostWord');
                 data.winner=winner;
                 if(data.done>0)
                 {
@@ -548,7 +549,8 @@ jQuery(function($){
              * @param data
              */
             updateWaitingScreen : function(data) {
-                if(IO.socket.socket.sessionid === data.mySocketId){
+                //if(IO.socket.socket.sessionid === data.mySocketId){
+                if(IO.socket.id === data.mySocketId){
                     App.myRole = 'Player';
                     App.gameId = data.gameId;
 
@@ -626,7 +628,7 @@ jQuery(function($){
 
             // Display the starting time on the screen.
             $el.text(startTime);
-            App.doTextFit('#hostWord');
+            //App.doTextFit('#hostWord');
 
             // console.log('Starting Countdown...');
 
@@ -637,7 +639,7 @@ jQuery(function($){
             function countItDown(){
                 startTime -= 1
                 $el.text(startTime);
-                App.doTextFit('#hostWord');
+                //App.doTextFit('#hostWord');
 
                 if( startTime <= 0 ){
                     // console.log('Countdown Finished.');

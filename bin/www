@@ -7,6 +7,18 @@
 var app = require('../app');
 var debug = require('debug')('express-locallibrary-tutorial:server');
 var http = require('http');
+
+// Set up mongoose connection
+var mongoose = require('mongoose');
+var dev_db_url = 'mongodb://localhost:27017/local_library'
+var mongoDB = process.env.MONGODB_URI || dev_db_url;
+mongoose.connect(mongoDB, {
+  useMongoClient: true
+});
+mongoose.Promise = global.Promise;
+var db = mongoose.connection;
+db.on('error', console.error.bind(console, 'MongoDB connection error:'));
+
 // Import the game file.
 var guizlogic = require('../gamelogic');
 
@@ -38,7 +50,7 @@ var io = require('socket.io').listen(server);
 // Listen for Socket.IO Connections. Once connected, start the game logic.
 io.sockets.on('connection', function (socket) {
     console.log('client connected');
-    //guizlogic.initGame(io, socket, db);
+    guizlogic.initGame(io, socket, db);
 });
 
 /**
