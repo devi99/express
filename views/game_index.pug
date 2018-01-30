@@ -7,12 +7,15 @@ block content
   script(id="intro-screen-template" type="text/template").
     <div class="titleWrapper">
                 <div class="title">
-                ANAGRAMMATIX
+                kwispel
             </div>
 
             <div class="buttons">
-
-                <button id="btnCreateGame" class="btn left">CREATE</button>
+                <select id="gameTypes">
+                    <option value="1">Fast Game</option>
+                    <option value="2">Turn-based Game</option>
+                </select>
+                <button id="btnCreateGame" class="btn left">CREATE</button>                
                 <button id="btnJoinGame" class="btn right">JOIN</button>
                 <div style="clear:both"></div>
                 <div id="mid">

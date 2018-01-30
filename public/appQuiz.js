@@ -248,6 +248,11 @@ jQuery(function($){
              * Keep track of the number of players that have joined the game.
              */
             numPlayersInRoom: 0,
+           
+            /**
+             * Contains reference to type of game
+             */
+            gameType : '',
 
             /**
              * A reference to the correct answer for the current round.
@@ -259,6 +264,7 @@ jQuery(function($){
              */
             onCreateClick: function () {
                 // console.log('Clicked "Create A Game"');
+                App.Host.gameType = document.getElementById("gameTypes").selectedIndex
                 IO.socket.emit('hostCreateNewGame');
             },
 

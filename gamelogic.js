@@ -220,7 +220,7 @@ function sendWord(wordPoolIndex, gameId) {
     console.log("sendWord#" + wordPoolIndex + "#" + gameId )
     var data = getWordData(wordPoolIndex);
     console.log("sendWord#" + data.word )
-    io.sockets.in(data.gameId).emit('newWordData', data);
+    io.sockets.in(gameId).emit('newWordData', data);
 }
 
 /**
