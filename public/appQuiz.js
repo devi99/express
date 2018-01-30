@@ -254,6 +254,11 @@ jQuery(function($){
              */
             gameType : '',
 
+             /**
+             * Keep track of the number of answers that have been given.
+             */
+            numAnswersGiven: 0,
+
             /**
              * A reference to the correct answer for the current round.
              */
@@ -405,12 +410,14 @@ jQuery(function($){
                             round : App.currentRound
                         }
 
-                        // Notify the server to start the next round.
-                        IO.socket.emit('hostNextRound',data);
-
                     } else {
                         // A wrong answer was submitted, so decrement the player's score.
                         $pScore.text( +$pScore.text() - 3 );
+                    }
+
+                    if(App.Host.numPlayersInRoom == App.Host.numAnswersGiven){
+                        // Notify the server to start the next round.
+                        IO.socket.emit('hostNextRound',data);
                     }
                 }
             },
