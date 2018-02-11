@@ -15,6 +15,8 @@ block content
                     <option value="1">Fast Game</option>
                     <option value="2">Turn-based Game</option>
                 </select>
+                <label for="nUsers">Number of users: </label>
+                <input type="number" id="nUsers">
                 <button id="btnCreateGame" class="btn left">CREATE</button>                
                 <button id="btnJoinGame" class="btn right">JOIN</button>
                 <div style="clear:both"></div>
@@ -58,12 +60,7 @@ block content
         <div id="hostWord">5</div>
     </div>
     <div id="playerScores">
-        <div id="player1Score" class="playerScore">
-            <span class="score">0</span><span class="playerName">Player 1</span>
-        </div>
-        <div id="player2Score" class="playerScore">
-            <span class="playerName">Player 2</span><span class="score">0</span>
-        </div>
+
     </div>
 
   script(id="leaderboard-template" type="text/template").

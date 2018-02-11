@@ -1,7 +1,6 @@
-;
+
 jQuery(function($){
     'use strict';
-
     /**
      * All the code relevant to Socket.IO is collected in the IO namespace.
      *
@@ -245,6 +244,11 @@ jQuery(function($){
             isNewGame : false,
 
             /**
+             * The number of players that are going to join the game.
+             */
+            numPlayersInTotal: 0,
+
+            /**
              * Keep track of the number of players that have joined the game.
              */
             numPlayersInRoom: 0,
@@ -268,8 +272,10 @@ jQuery(function($){
              * Handler for the "Start" button on the Title Screen.
              */
             onCreateClick: function () {
-                // console.log('Clicked "Create A Game"');
                 App.Host.gameType = document.getElementById("gameTypes").selectedIndex
+                App.Host.numPlayersInTotal = $('#nUsers').val();
+                //console.log("Clicked Create A Game with " + App.Host.gameType + App.Host.numPlayersInTotal);
+                
                 IO.socket.emit('hostCreateNewGame');
             },
 
@@ -313,8 +319,7 @@ jQuery(function($){
                 }
                 // Update host screen
                 $('#playersWaiting')
-                    .append('<p/>')
-                    .text('Player ' + data.playerName + ' joined the game.');
+                    .append('<p>Player ' + data.playerName + ' joined the game.<p/>');
 
                 // Store the new player's data on the Host.
                 App.Host.players.push(data);
@@ -323,12 +328,15 @@ jQuery(function($){
                 App.Host.numPlayersInRoom += 1;
 
                 // If two players have joined, start the game!
-                if (App.Host.numPlayersInRoom === 2) {
-                    // console.log('Room is full. Almost ready!');
+                if (App.Host.numPlayersInRoom == App.Host.numPlayersInTotal) {
+                    console.log('Room is full. Almost ready!');
 
-                    // Let the server know that two players are present.
+                    // Let the server know that the players are present.
                     IO.socket.emit('hostRoomFull',App.gameId);
-                }
+                };
+
+                console.log(App.Host.numPlayersInRoom + '/' + App.Host.numPlayersInTotal + ' in Room!');
+
             },
 
             /**
@@ -345,15 +353,21 @@ jQuery(function($){
                 App.countDown( $secondsLeft, 5, function(){
                     IO.socket.emit('hostCountdownFinished', App.gameId);
                 });
+                
+                $.each(App.Host.players, function(index,value){
+                    console.log('looping');
+                    $('#playerScores')
+                        .append('<div id="player'+ index++ +'Score" class="playerScore"><span class="score">0</span><span class="playerName">'+ value.playerName +'</span></div>');
+                });
 
-                // Display the players' names on screen
+/*                 // Display the players' names on screen
                 $('#player1Score')
                     .find('.playerName')
                     .html(App.Host.players[0].playerName);
 
                 $('#player2Score')
                     .find('.playerName')
-                    .html(App.Host.players[1].playerName);
+                    .html(App.Host.players[1].playerName); */
 
                 // Set the Score section on screen to 0 for each player.
                 $('#player1Score').find('.score').attr('id',App.Host.players[0].mySocketId);
