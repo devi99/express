@@ -1,0 +1,14 @@
+extends layout
+
+block content
+
+  h1 GameId: #{game.gameId}
+  h1 Status: #{game.gameStatus}
+  
+  div(style='margin-left:20px;margin-top:20px')
+      
+  hr
+  p
+    a(href=game.url+'/delete') Delete game
+  p
+    a(href=game.url+'/update') Update game

@@ -360,14 +360,7 @@ jQuery(function($){
                         .append('<div id="player'+ index++ +'Score" class="playerScore"><span class="score">0</span><span class="playerName">'+ value.playerName +'</span></div>');
                 });
 
-/*                 // Display the players' names on screen
-                $('#player1Score')
-                    .find('.playerName')
-                    .html(App.Host.players[0].playerName);
 
-                $('#player2Score')
-                    .find('.playerName')
-                    .html(App.Host.players[1].playerName); */
 
                 // Set the Score section on screen to 0 for each player.
                 $('#player1Score').find('.score').attr('id',App.Host.players[0].mySocketId);

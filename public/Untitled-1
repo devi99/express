@@ -1,0 +1,8 @@
+/*                 // Display the players' names on screen
+                $('#player1Score')
+                    .find('.playerName')
+                    .html(App.Host.players[0].playerName);
+
+                $('#player2Score')
+                    .find('.playerName')
+                    .html(App.Host.players[1].playerName); */

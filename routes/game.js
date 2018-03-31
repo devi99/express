@@ -5,8 +5,22 @@ var router = express.Router();
 var question_controller = require('../controllers/questionController'); 
 var game_controller = require('../controllers/gameController'); 
 
+/// GAME ROUTES ///
+
 // GET game home page.
 router.get('/', game_controller.game_index);  
+
+// GET game home page.
+router.get('/list', game_controller.game_list);  
+
+// GET request for creating a Game.
+router.get('/create', game_controller.game_create_get);
+
+// POST request for creating Question.
+router.post('/create', game_controller.game_create_post);
+
+// GET request for one question.
+router.get('/:id', game_controller.game_detail);
 
 /// QUESTION ROUTES ///
 

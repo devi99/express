@@ -1,0 +1,11 @@
+extends layout
+
+block content
+  h1= title
+  
+  ul
+  each sgame in game_list
+    li 
+       a(href=sgame.url) #{sgame.gameId} 
+  else
+    li There are no questions.
