@@ -8,8 +8,8 @@ var async = require('async');
 exports.game_index = function(req, res) {
 
     async.parallel({
-        game_count: function(callback) {
-            game.count(callback);
+        Game_count: function(callback) {
+            Game.count(callback);
         },
     }, function(err, results) {
         res.render('game_index', { title: 'Let us play a Quiz', error: err, data: results });

@@ -27,6 +27,9 @@ router.get('/:id', game_controller.game_detail);
 // GET request for creating a Question. NOTE This must come before route that displays question (uses id).
 router.get('/question/create', question_controller.question_create_get);
 
+// GET request for list of all Questions.
+router.get('/question/list', question_controller.question_list);
+
 // POST request for creating Question.
 router.post('/question/create', question_controller.question_create_post);
 
@@ -44,8 +47,5 @@ router.post('/question/:id/update', question_controller.question_update_post);
 
 // GET request for one question.
 router.get('/question/:id', question_controller.question_detail);
-
-// GET request for list of all Questions.
-router.get('/questions', question_controller.question_list);
 
 module.exports = router;

@@ -1,10 +1,30 @@
 extends layout
 
 block content
-
-  h1 GameId: #{game.gameId}
-   
+  
   div(id="gameArea")
+
+  script(id="intro-screen-template" type="text/template").
+    <div class="titleWrapper">
+                <div class="title">
+                kwispel
+            </div>
+
+            <div class="buttons">
+                <select id="gameTypes">
+                    <option value="1">Fast Game</option>
+                    <option value="2">Turn-based Game</option>
+                </select>
+                <label for="nUsers">Number of users: </label>
+                <input type="number" id="nUsers">
+                <button id="btnCreateGame" class="btn left">CREATE</button>                
+                <button id="btnJoinGame" class="btn right">JOIN</button>
+                <div style="clear:both"></div>
+                <div id="mid">
+                <input class="btn" type="button" value="LEADER BOARD" id="leaderboard">
+                </div>
+            </div>
+      </div>
   
   script(id="create-game-template" type="text/template").
     <div class="createGameWrapper">
@@ -12,7 +32,7 @@ block content
       <div id="gameURL" class="infoBig">Error!</div>
 
       <div class="info">Then click <strong>JOIN</strong> and <br/> enter the following Game ID:</div>
-      <div id="spanNewGameCode" class="gameId">#{game.gameId}</div>
+      <div id="spanNewGameCode" class="gameId">Error!</div>
 
       <div id="playersWaiting"></div>
     </div>
@@ -52,3 +72,4 @@ block content
   script(src="libs/fastclick.js")
   script(src="/socket.io/socket.io.js")
   script(src="/appQuiz.js")
+

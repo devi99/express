@@ -274,7 +274,7 @@ jQuery(function($){
             onCreateClick: function () {
                 App.Host.gameType = document.getElementById("gameTypes").selectedIndex
                 App.Host.numPlayersInTotal = $('#nUsers').val();
-                //console.log("Clicked Create A Game with " + App.Host.gameType + App.Host.numPlayersInTotal);
+                console.log("Clicked Create A Game with " + App.Host.gameType + App.Host.numPlayersInTotal);
                 
                 IO.socket.emit('hostCreateNewGame');
             },
@@ -290,7 +290,7 @@ jQuery(function($){
                 App.Host.numPlayersInRoom = 0;
 
                 App.Host.displayNewGameScreen();
-                // console.log("Game started with ID: " + App.gameId + ' by host: ' + App.mySocketId);
+                console.log("Game started with ID: " + App.gameId + ' by host: ' + App.mySocketId);
             },
 
             /**
@@ -355,16 +355,13 @@ jQuery(function($){
                 });
                 
                 $.each(App.Host.players, function(index,value){
-                    console.log('looping');
                     $('#playerScores')
-                        .append('<div id="player'+ index++ +'Score" class="playerScore"><span class="score">0</span><span class="playerName">'+ value.playerName +'</span></div>');
+                        .append('<div id="player'+ index++ +'" class="playerScore"><span id="'+ value.mySocketId +'" class="score">0</span><span class="playerName">'+ value.playerName +'</span></div>');
                 });
 
-
-
                 // Set the Score section on screen to 0 for each player.
-                $('#player1Score').find('.score').attr('id',App.Host.players[0].mySocketId);
-                $('#player2Score').find('.score').attr('id',App.Host.players[1].mySocketId);
+                // $('#player1Score').find('.score').attr('id',App.Host.players[0].mySocketId);
+                // $('#player2Score').find('.score').attr('id',App.Host.players[1].mySocketId);
             },
 
             /**
@@ -402,7 +399,7 @@ jQuery(function($){
 
                     // Get the player's score
                     var $pScore = $('#' + data.playerId);
-
+                    console.log($pScore);
                     // Advance player's score if it is correct
                     if( App.Host.currentCorrectAnswer === data.answer ) {
                         // Add 5 to the player's score
@@ -515,7 +512,7 @@ jQuery(function($){
              * and clicked Start.
              */
             onPlayerStartClick: function() {
-                // console.log('Player clicked "Start"');
+                console.log('Player clicked "Start"');
 
                 // collect data to send to the server
                 var data = {
@@ -535,7 +532,7 @@ jQuery(function($){
              *  Click handler for the Player hitting a word in the word list.
              */
             onPlayerAnswerClick: function() {
-                // console.log('Clicked Answer Button');
+                console.log('Clicked Answer Button');
                 var $btn = $(this);      // the tapped button
                 var answer = $btn.val(); // The tapped word
 

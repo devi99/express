@@ -1,8 +1,6 @@
 var io;
 var gameSocket;
 var db;
-var Question = require('./models/question');
-
 /**
  * This function is called by index.js to initialize a new game instance.
  *
@@ -235,45 +233,29 @@ function sendWord(wordPoolIndex, gameId) {
  * @returns {{round: *, word: *, answer: *, list: Array}}
  */
 function getWordData(i){
-    var recQuestion = "";
-    var recAnswer = "seal";
-
-    Question.find().exec(function(err, question_list) {
-        if (err) throw err;
-        console.log(question_list);
-        return wordData;
-    });
-
-    //recQuestion = question_list[i].question;
-    //recAnswer = question_list[i].correctAnswer;
-    var words = shuffle(wordPool[i].words);
-    var decoys = shuffle(wordPool[i].decoys).slice(0,5);
-    var rnd = Math.floor(Math.random() * 5);
-    decoys.splice(rnd, 0, words[1]);
-
-       // Package the words into a single object.
-    var wordData = {
-        round: i,
-        word : recQuestion,   // Displayed Word
-        answer : recAnswer, // Correct Answer
-        list : decoys      // Word list for player (decoys and answer)
-    };
-
-console.log("einde");
     // Randomize the order of the available words.
     // The first element in the randomized array will be displayed on the host screen.
     // The second element will be hidden in a list of decoys as the correct answer
-    //var words = shuffle(wordPool[i].words);
+    var words = shuffle(wordPool[i].words);
 
     // Randomize the order of the decoy words and choose the first 5
-    //var decoys = shuffle(wordPool[i].decoys).slice(0,5);
+    var decoys = shuffle(wordPool[i].decoys).slice(0,5);
 
     // Pick a random spot in the decoy list to put the correct answer
-    //var rnd = Math.floor(Math.random() * 5);
-    //decoys.splice(rnd, 0, words[1]);
+    var rnd = Math.floor(Math.random() * 5);
+    decoys.splice(rnd, 0, words[1]);
 
+    // Package the words into a single object.
+    var wordData = {
+        round: i,
+        word : words[0],   // Displayed Word
+        answer : words[1], // Correct Answer
+        list : decoys      // Word list for player (decoys and answer)
+    };
+
+    return wordData;
 }
- 
+
 /*
  * Javascript implementation of Fisher-Yates shuffle algorithm
  * http://stackoverflow.com/questions/2450954/how-to-randomize-a-javascript-array
@@ -308,9 +290,6 @@ function shuffle(array) {
  *
  * @type {Array}
  */
-
-
- 
 var wordPool = [
     {
         "words"  : [ "sale","seal","ales","leas" ],

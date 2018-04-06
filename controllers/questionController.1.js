@@ -8,18 +8,24 @@ var async = require('async');
 exports.index = function(req, res) {
     console.log("question_index");
 
+    async.parallel({
+        Question_count: function(callback) {
+            Question.count(callback);
+        },
+    }, function(err, results) {
+        res.render('index', { title: 'Local Library Home', error: err, data: results });
+    });
 };
 
 
 // Display list of all questions.
 exports.question_list = function(req, res, next) {
-    console.log("question_list 2");
-    Question.find()
+console.log("question_list");
+  Question.find()
     .exec(function (err, list_questions) {
       if (err) { return next(err); }
       // Successful, so render
-      //res.render('question_list', { title: 'Question List', question_list:  list_questions});
-      res.send(list_questions);
+      res.render('question_list', { title: 'Question List', question_list:  list_questions});
     });
 
 };
