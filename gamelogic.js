@@ -2,6 +2,8 @@ var io;
 var gameSocket;
 var db;
 var Question = require('./models/question');
+var question_controller = require('./controllers/questionController');
+
 
 /**
  * This function is called by index.js to initialize a new game instance.
@@ -220,10 +222,11 @@ function playerRestart(data) {
  * @param wordPoolIndex
  * @param gameId The room identifier
  */
-function sendWord(wordPoolIndex, gameId) {
+async function sendWord(wordPoolIndex, gameId) {
     console.log("sendWord#" + wordPoolIndex + "#" + gameId )
-    var data = getWordData(wordPoolIndex);
-    console.log("sendWord#" + data.word )
+    var data = await getWordData(wordPoolIndex);
+    //var data = question_controller.question_list();
+    console.log("sendWord#" + data)
     io.sockets.in(gameId).emit('newWordData', data);
 }
 
@@ -234,30 +237,41 @@ function sendWord(wordPoolIndex, gameId) {
  * @param i The index of the wordPool.
  * @returns {{round: *, word: *, answer: *, list: Array}}
  */
-function getWordData(i){
+async function getWordData(i){
     var recQuestion = "";
     var recAnswer = "seal";
+    var wordData;
+    console.log("kak1");
+    var cars = ["Saab", "Volvo", "BMW"];
 
-    Question.find().exec(function(err, question_list) {
+
+    /* recQuestion = await Question.find().exec(function(err, question_list) {
         if (err) throw err;
-        console.log(question_list);
-        return wordData;
-    });
+        console.log(question_list[i].question);
+        return;
+    }); */
 
+    const query1 = Question.find();
+    const question_list = await query1.exec();
+
+
+    console.log(question_list[i].question);
     //recQuestion = question_list[i].question;
     //recAnswer = question_list[i].correctAnswer;
-    var words = shuffle(wordPool[i].words);
-    var decoys = shuffle(wordPool[i].decoys).slice(0,5);
-    var rnd = Math.floor(Math.random() * 5);
-    decoys.splice(rnd, 0, words[1]);
-
-       // Package the words into a single object.
-    var wordData = {
-        round: i,
-        word : recQuestion,   // Displayed Word
-        answer : recAnswer, // Correct Answer
-        list : decoys      // Word list for player (decoys and answer)
-    };
+/*         var words = shuffle(wordPool[i].words);
+        var decoys = shuffle(wordPool[i].decoys).slice(0,5);
+        var rnd = Math.floor(Math.random() * 5);
+        decoys.splice(rnd, 0, words[1]); */
+    
+           // Package the words into a single object.
+        wordData = {
+            round: i,
+            word : question_list[i].question,   // Displayed Word
+            answer : question_list[i].correctAnswer, //question_list[i].correctAnswer, Correct Answer
+            list : cars      // Word list for player (decoys and answer)
+        };
+        
+        return wordData;
 
 console.log("einde");
     // Randomize the order of the available words.
