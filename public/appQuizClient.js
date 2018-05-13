@@ -249,6 +249,11 @@ jQuery(function($){
             numPlayersInTotal: 0,
 
             /**
+             * The number of Questions that will be answered.
+             */
+            numQuestions: 0,
+
+            /**
              * Keep track of the number of players that have joined the game.
              */
             numPlayersInRoom: 0,
@@ -269,11 +274,17 @@ jQuery(function($){
             currentCorrectAnswer: '',
 
             /**
+             * A reference to the current round.
+             */
+            activeRound: 0,
+
+            /**
              * Handler for the "Start" button on the Title Screen.
              */
             onCreateClick: function () {
                 App.Host.gameType = document.getElementById("gameTypes").selectedIndex
                 App.Host.numPlayersInTotal = $('#nUsers').val();
+                App.Host.numQuestions = $('#nQuestions').val();
                 console.log("Clicked Create A Game with " + App.Host.gameType + App.Host.numPlayersInTotal);
                 
                 IO.socket.emit('hostCreateNewGame');
@@ -288,7 +299,8 @@ jQuery(function($){
                 App.mySocketId = data.mySocketId;
                 App.myRole = 'Host';
                 App.Host.numPlayersInRoom = 0;
-
+                App.Host.numAnswersGiven = 0;
+                App.Host.activeRound = 0;
                 App.Host.displayNewGameScreen();
                 console.log("Game started with ID: " + App.gameId + ' by host: ' + App.mySocketId);
             },
@@ -356,7 +368,7 @@ jQuery(function($){
                 
                 $.each(App.Host.players, function(index,value){
                     $('#playerScores')
-                        .append('<div id="player'+ index++ +'" class="playerScore"><span id="'+ value.mySocketId +'" class="score">0</span><span class="playerName">'+ value.playerName +'</span></div>');
+                        .append('<div id="player'+ index++ +'" class="row playerScore"><span id="'+ value.mySocketId +'" class="score">0</span><span class="playerName">'+ value.playerName +'</span></div>');
                 });
 
                 // Set the Score section on screen to 0 for each player.
@@ -395,6 +407,7 @@ jQuery(function($){
                 // Verify that the answer clicked is from the current round.
                 // This prevents a 'late entry' from a player whos screen has not
                 // yet updated to the current round.
+                console.log('NumAnswersGiven=' + App.Host.numAnswersGiven);
                 if (data.round === App.currentRound){
 
                     // Get the player's score
@@ -404,24 +417,36 @@ jQuery(function($){
                     if( App.Host.currentCorrectAnswer === data.answer ) {
                         // Add 5 to the player's score
                         $pScore.text( +$pScore.text() + 5 );
-
-                        // Advance the round
-                        App.currentRound += 1;
-
-                        // Prepare data to send to the server
-                        var data = {
-                            gameId : App.gameId,
-                            round : App.currentRound
-                        }
+                        
+                        //Increment Answered Players
+                        App.Host.numAnswersGiven +=1;
 
                     } else {
                         // A wrong answer was submitted, so decrement the player's score.
                         $pScore.text( +$pScore.text() - 3 );
+
+                        //Increment Answered Players
+                        App.Host.numAnswersGiven +=1;
                     }
 
+                    // Prepare data to send to the server
+                    var data = {
+                        gameId : App.gameId,
+                        round : App.Host.activeRound
+                    }
+                    //Check whether everybody answered so we can progress to the next round
                     if(App.Host.numPlayersInRoom == App.Host.numAnswersGiven){
+                        console.log("Next Round !");
+                        // Advance the round
+                        App.Host.activeRound += 1;
+                        App.Host.numAnswersGiven = 0;
+                        
+                        if(App.Host.numQuestions == App.Host.activeRound){
+                            IO.sockets.in(data.gameId).emit('gameOver',data);
+                        }else{    
                         // Notify the server to start the next round.
                         IO.socket.emit('hostNextRound',data);
+                        }
                     }
                 }
             },
@@ -432,6 +457,11 @@ jQuery(function($){
              * @param data
              */
             endGame : function(data) {
+                var scoreboard = [];
+                $( ".playerScore" ).each(function( index ) {
+                    console.log( index + ": " + $( this ).text() );
+                    scoreboard.push($( this ).text(),$( this ).score)
+                  });                  
                 // Get the data for player 1 from the host screen
                 var $p1 = $('#player1Score');
                 var p1Score = +$p1.find('.score').text();
@@ -467,7 +497,7 @@ jQuery(function($){
                 // Reset game data
                 App.Host.numPlayersInRoom = 0;
                 App.Host.isNewGame = true;
-                IO.socket.emit('hostNextRound',data);
+                //IO.socket.emit('hostNextRound',data);
                 // Reset game data
             },
 

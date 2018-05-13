@@ -1,30 +1,30 @@
-extends layout
+extends layoutGame
 
 block content
-  
-  div(id="gameArea")
 
   script(id="intro-screen-template" type="text/template").
     <div class="titleWrapper">
                 <div class="title">
                 kwispel
             </div>
-
-            <div class="buttons">
-                <select id="gameTypes">
-                    <option value="1">Fast Game</option>
-                    <option value="2">Turn-based Game</option>
-                </select>
-                <label for="nUsers">Number of users: </label>
-                <input type="number" id="nUsers">
-                <button id="btnCreateGame" class="btn left">CREATE</button>                
-                <button id="btnJoinGame" class="btn right">JOIN</button>
-                <div style="clear:both"></div>
-                <div id="mid">
-                <input class="btn" type="button" value="LEADER BOARD" id="leaderboard">
-                </div>
-            </div>
-      </div>
+     </div>
+    <div class="buttons">
+        <select id="gameTypes">
+            <option value="1">Fast Game</option>
+            <option value="2">Turn-based Game</option>
+        </select>
+        <label for="nUsers">Number of users: </label>
+        <input type="number" id="nUsers">
+        <label for="nQuestions">Number of Questions: </label>
+        <input type="number" id="nQuestions">                
+        <button id="btnCreateGame" class="btn left">CREATE</button>                
+        <button id="btnJoinGame" class="btn right">JOIN</button>
+        <div style="clear:both"></div>
+        <div id="mid">
+        <input class="btn" type="button" value="LEADER BOARD" id="leaderboard">
+        </div>
+    </div>
+ 
   
   script(id="create-game-template" type="text/template").
     <div class="createGameWrapper">
@@ -56,10 +56,11 @@ block content
     </div>
 
   script(id="host-game-template" type="text/template").
-    <div id="wordArea">
-        <div id="hostWord">5</div>
+
+    <div id="playerScores" class="col-sm-4">
     </div>
-    <div id="playerScores">
+    <div id="wordArea" class="col-sm-8">
+        <div id="hostWord"></div>
     </div>
 
   script(id="leaderboard-template" type="text/template").
@@ -70,5 +71,5 @@ block content
   script(src="libs/textFit.min.js")
   script(src="libs/fastclick.js")
   script(src="/socket.io/socket.io.js")
-  script(src="/appQuiz.js")
+  script(src="/appQuizClient.js")
 

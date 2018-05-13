@@ -84,14 +84,15 @@ function hostStartGame(gameId) {
  * @param data Sent from the client. Contains the current round and gameId (room)
  */
 function hostNextRound(data) {
-    if(data.round < wordPool.length ){
+    console.log('round' + data.round);
+    if(data.round < 2 ){
         // Send a new set of words back to the host and players.
         sendWord(data.round, data.gameId);
     } else {
 
       if(!data.done)
       {
-        //updating players win count
+/*         //updating players win count
         db.all("SELECT * FROM player WHERE player_name=?",data.winner, function(err, rows) {
         rows.forEach(function (row) {
             win=row.player_win;
@@ -100,7 +101,7 @@ function hostNextRound(data) {
             db.run("UPDATE player SET player_win = ? WHERE player_name = ?", win, data.winner);
             console.log(row.player_name, row.player_win);
         })
-        });
+        }); */
         data.done++;
       }
         // If the current round exceeds the number of words, send the 'gameOver' event.
@@ -162,18 +163,7 @@ function playerJoinGame(data) {
 
         // Join the room
         sock.join(data.gameId);
-/*         db.serialize(function()
-            {
-                var stmt = " SELECT * FROM player WHERE player_name='"+data.playerName+"';";
-                db.get(stmt, function(err, row){
-                    if(err) throw err;
-                    if(typeof row == "undefined") {
-                            db.prepare("INSERT INTO player (player_name,player_win) VALUES(?,?)").run(data.playerName,0).finalize();
-                    } else {
-                        console.log("row is: ", row);
-                    }
-                });
-            }); */
+
         console.log('Player ' + data.playerName + ' joining game: ' + data.gameId );
 
         // Emit an event notifying the clients that the player has joined the room.
@@ -225,8 +215,6 @@ function playerRestart(data) {
 async function sendWord(wordPoolIndex, gameId) {
     console.log("sendWord#" + wordPoolIndex + "#" + gameId )
     var data = await getWordData(wordPoolIndex);
-    //var data = question_controller.question_list();
-    console.log("sendWord#" + data)
     io.sockets.in(gameId).emit('newWordData', data);
 }
 
@@ -238,53 +226,23 @@ async function sendWord(wordPoolIndex, gameId) {
  * @returns {{round: *, word: *, answer: *, list: Array}}
  */
 async function getWordData(i){
-    var recQuestion = "";
-    var recAnswer = "seal";
     var wordData;
-    console.log("kak1");
-    var cars = ["Saab", "Volvo", "BMW"];
-
-
-    /* recQuestion = await Question.find().exec(function(err, question_list) {
-        if (err) throw err;
-        console.log(question_list[i].question);
-        return;
-    }); */
-
-    const query1 = Question.find();
-    const question_list = await query1.exec();
-
-
-    console.log(question_list[i].question);
-    //recQuestion = question_list[i].question;
-    //recAnswer = question_list[i].correctAnswer;
-/*         var words = shuffle(wordPool[i].words);
-        var decoys = shuffle(wordPool[i].decoys).slice(0,5);
-        var rnd = Math.floor(Math.random() * 5);
-        decoys.splice(rnd, 0, words[1]); */
+    const count = await Question.count().exec();
+    var rnd = Math.floor(Math.random() * count);
+    const question_list = await Question.findOne().skip(rnd).exec();
+    var answerList = [question_list.fakeAnswer1, question_list.fakeAnswer2, question_list.fakeAnswer3,question_list.fakeAnswer4,question_list.fakeAnswer5];
+    rnd = Math.floor(Math.random() * 5);
+    answerList.splice(rnd, 0, question_list.correctAnswer); 
     
-           // Package the words into a single object.
-        wordData = {
-            round: i,
-            word : question_list[i].question,   // Displayed Word
-            answer : question_list[i].correctAnswer, //question_list[i].correctAnswer, Correct Answer
-            list : cars      // Word list for player (decoys and answer)
-        };
+        // Package the words into a single object.
+    wordData = {
+        round: i,
+        word : question_list.question,   // Displayed Word
+        answer : question_list.correctAnswer, //question_list[i].correctAnswer, Correct Answer
+        list : answerList      // Word list for player (decoys and answer)
+    };
         
-        return wordData;
-
-console.log("einde");
-    // Randomize the order of the available words.
-    // The first element in the randomized array will be displayed on the host screen.
-    // The second element will be hidden in a list of decoys as the correct answer
-    //var words = shuffle(wordPool[i].words);
-
-    // Randomize the order of the decoy words and choose the first 5
-    //var decoys = shuffle(wordPool[i].decoys).slice(0,5);
-
-    // Pick a random spot in the decoy list to put the correct answer
-    //var rnd = Math.floor(Math.random() * 5);
-    //decoys.splice(rnd, 0, words[1]);
+    return wordData;
 
 }
  
@@ -312,67 +270,3 @@ function shuffle(array) {
 
     return array;
 }
-
-/**
- * Each element in the array provides data for a single round in the game.
- *
- * In each round, two random "words" are chosen as the host word and the correct answer.
- * Five random "decoys" are chosen to make up the list displayed to the player.
- * The correct answer is randomly inserted into the list of chosen decoys.
- *
- * @type {Array}
- */
-
-
- 
-var wordPool = [
-    {
-        "words"  : [ "sale","seal","ales","leas" ],
-        "decoys" : [ "lead","lamp","seed","eels","lean","cels","lyse","sloe","tels","self" ]
-    },
-
-    {
-        "words"  : [ "item","time","mite","emit" ],
-        "decoys" : [ "neat","team","omit","tame","mate","idem","mile","lime","tire","exit" ]
-    },
-
-    {
-        "words"  : [ "spat","past","pats","taps" ],
-        "decoys" : [ "pots","laps","step","lets","pint","atop","tapa","rapt","swap","yaps" ]
-    },
-
-    {
-        "words"  : [ "nest","sent","nets","tens" ],
-        "decoys" : [ "tend","went","lent","teen","neat","ante","tone","newt","vent","elan" ]
-    },
-
-    {
-        "words"  : [ "pale","leap","plea","peal" ],
-        "decoys" : [ "sale","pail","play","lips","slip","pile","pleb","pled","help","lope" ]
-    },
-
-    {
-        "words"  : [ "races","cares","scare","acres" ],
-        "decoys" : [ "crass","scary","seeds","score","screw","cager","clear","recap","trace","cadre" ]
-    },
-
-    {
-        "words"  : [ "bowel","elbow","below","beowl" ],
-        "decoys" : [ "bowed","bower","robed","probe","roble","bowls","blows","brawl","bylaw","ebola" ]
-    },
-
-    {
-        "words"  : [ "dates","stead","sated","adset" ],
-        "decoys" : [ "seats","diety","seeds","today","sited","dotes","tides","duets","deist","diets" ]
-    },
-
-    {
-        "words"  : [ "spear","parse","reaps","pares" ],
-        "decoys" : [ "ramps","tarps","strep","spore","repos","peris","strap","perms","ropes","super" ]
-    },
-
-    {
-        "words"  : [ "stone","tones","steno","onset" ],
-        "decoys" : [ "snout","tongs","stent","tense","terns","santo","stony","toons","snort","stint" ]
-    }
-]

@@ -13,15 +13,16 @@ exports.index = function(req, res) {
 
 // Display list of all questions.
 exports.question_list = function(req, res, next) {
+    
     console.log("question_list 2");
     Question.find()
     .exec(function (err, list_questions) {
       if (err) { return next(err); }
       // Successful, so render
-      //res.render('question_list', { title: 'Question List', question_list:  list_questions});
+      res.render('question_list', { title: 'Question List', question_list:  list_questions});
       //res.send(list_questions);
-      console.log(list_questions);
-      return list_questions;
+      //console.log(list_questions);
+      //return list_questions;
     });
 
 };

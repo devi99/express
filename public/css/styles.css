@@ -243,6 +243,8 @@ html, body {
 #hostWord {
     height: 100%;
     width: 100%;
+    font-family: 'Quicksand', sans-serif;    
+    font-size: 2.5EM;
 }
 
 #hostWord h2, #btnPlayerRestart h3 {
@@ -255,16 +257,16 @@ html, body {
     text-transform: uppercase;
 }
 
-#playerScores {
+/* #playerScores {
     height: 10%;
     width: 100%;
     position: fixed;
     top: 0;
-}
+} */
 
 .playerScore {
-    width: 50%;
-    padding: 0;
+    width: 100%;
+    padding: 4px;
     margin: 0;
     font-family: 'Quicksand', sans-serif;
     font-weight: 400;
@@ -287,15 +289,6 @@ html, body {
 .playerScore .playerName {
     width: 77%;
     background-color: #ECFFE0;
-}
-
-#player1Score {
-    float: left;
-}
-
-#player2Score {
-    float: right;
-    text-align: right;
 }
 
 
