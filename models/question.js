@@ -9,7 +9,9 @@ var QuestionSchema = new Schema({
     fakeAnswer2: {type: String, required: false},
     fakeAnswer3: {type: String, required: false},
     fakeAnswer4: {type: String, required: false},
-    fakeAnswer5: {type: String, required: false}
+    fakeAnswer5: {type: String, required: false},
+    typeMedia: {type: String, required: false},
+    urlMedia: {type: String, required: false}
 });
 
 // Virtual for this question instance URL.

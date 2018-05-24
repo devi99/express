@@ -226,19 +226,22 @@ async function sendWord(wordPoolIndex, gameId) {
  * @returns {{round: *, word: *, answer: *, list: Array}}
  */
 async function getWordData(i){
+    //console.log("getwordData");
     var wordData;
     const count = await Question.count().exec();
     var rnd = Math.floor(Math.random() * count);
     const question_list = await Question.findOne().skip(rnd).exec();
     var answerList = [question_list.fakeAnswer1, question_list.fakeAnswer2, question_list.fakeAnswer3,question_list.fakeAnswer4,question_list.fakeAnswer5];
+    //console.log(answerList);
     rnd = Math.floor(Math.random() * 5);
     answerList.splice(rnd, 0, question_list.correctAnswer); 
-    
         // Package the words into a single object.
     wordData = {
         round: i,
         word : question_list.question,   // Displayed Word
         answer : question_list.correctAnswer, //question_list[i].correctAnswer, Correct Answer
+        typeMedia : question_list.typeMedia,
+        urlMedia : question_list.urlMedia,
         list : answerList      // Word list for player (decoys and answer)
     };
         

@@ -94,7 +94,9 @@ exports.question_create_post = [
             fakeAnswer2: req.body.fakeAnswer2,
             fakeAnswer3: req.body.fakeAnswer3,
             fakeAnswer4: req.body.fakeAnswer4,
-            fakeAnswer5: req.body.fakeAnswer5
+            fakeAnswer5: req.body.fakeAnswer5,
+            typeMedia:  req.body.typeMedia,
+            urlMedia:   req.body.urlMedia
            });
 
         if (!errors.isEmpty()) {
@@ -222,6 +224,8 @@ exports.question_update_post = [
               fakeAnswer3: req.body.fakeAnswer3,
               fakeAnswer4: req.body.fakeAnswer4,
               fakeAnswer5: req.body.fakeAnswer5,
+              typeMedia:  req.body.typeMedia,
+              urlMedia:   req.body.urlMedia,                
               _id:req.params.id
              });           
 

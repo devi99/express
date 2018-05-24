@@ -19,6 +19,10 @@ block content
       input#fakeAnswer1.form-control(type='text', placeholder='Fake Answer' name='fakeAnswer4' required='false' value=(undefined===question ? '' : question.fakeAnswer4))
       label(for='fakeAnswer5') Fake Answer 5:
       input#fakeAnswer1.form-control(type='text', placeholder='Fake Answer' name='fakeAnswer5' required='false' value=(undefined===question ? '' : question.fakeAnswer5))
+      label(for='typeMedia') typeMedia:
+      input#typeMedia.form-control(type='text', placeholder='typeMedia' name='typeMedia' required='false' value=(undefined===question ? '' : question.typeMedia))
+      label(for='urlMedia') urlMedia:
+      input#urlMedia.form-control(type='text', placeholder='urlMedia' name='urlMedia' required='false' value=(undefined===question ? '' : question.urlMedia))
           
     button.btn.btn-primary(type='submit') Submit
 

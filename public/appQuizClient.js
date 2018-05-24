@@ -385,9 +385,10 @@ jQuery(function($){
                 $('#hostWord').text(data.word);
                 //App.doTextFit('#hostWord');
                 //Insert the Image
+                console.log(data.typeMedia);
                 if(data.typeMedia == 'pic') {
                     //$('body').css('backgroundImage','url('+data.urlMedia+')');
-                    $('#hostMedia').html("<img class='fixed-ratio-resize' src="+data.urlMedia+"'>");
+                    $('#hostMedia').html("<img class='fixed-ratio-resize' src='"+data.urlMedia+"'>");
                 }
                 if(data.typeMedia == 'vid') {
                     $('#hostMedia').html("<iframe width='100%' height='500' src='"+data.urlMedia+"' frameborder='0' gesture='media' allow='encrypted-media' allowfullscreen></iframe>");
